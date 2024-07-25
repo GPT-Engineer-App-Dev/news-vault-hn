@@ -1,12 +1,10 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import HackerNews from "../components/HackerNews";
 
 const Index = () => {
   return (
-    <div className="flex justify-center items-center">
-      <div className="text-center">
-        <h1 className="text-3xl">Your Blank Canvas</h1>
-        <p>Chat with the agent to start making edits.</p>
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Top 100 Hacker News Stories</h1>
+      <HackerNews />
     </div>
   );
 };
