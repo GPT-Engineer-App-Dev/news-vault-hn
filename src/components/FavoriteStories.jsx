@@ -1,62 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Search, Star } from 'lucide-react';
+import { Star, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useToast } from "@/components/ui/use-toast";
 
-const fetchHackerNewsStories = async () => {
-  const response = await fetch(
-    'https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=100'
-  );
-  if (!response.ok) {
-    throw new Error('Network response was not ok');
-  }
-  return response.json();
-};
-
-const HackerNews = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+const FavoriteStories = () => {
   const [favorites, setFavorites] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['hackerNewsStories'],
-    queryFn: fetchHackerNewsStories,
-  });
 
   useEffect(() => {
     const storedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     setFavorites(storedFavorites);
   }, []);
 
-  const toggleFavorite = (story) => {
-    const newFavorites = favorites.some(fav => fav.objectID === story.objectID)
-      ? favorites.filter(fav => fav.objectID !== story.objectID)
-      : [...favorites, story];
-    
+  const removeFavorite = (story) => {
+    const newFavorites = favorites.filter(fav => fav.objectID !== story.objectID);
     setFavorites(newFavorites);
     localStorage.setItem('favorites', JSON.stringify(newFavorites));
-    
     toast({
-      title: newFavorites.length > favorites.length ? "Added to favorites" : "Removed from favorites",
+      title: "Removed from favorites",
       description: story.title,
     });
   };
 
-  const filteredStories = data?.hits?.filter(story =>
+  const filteredFavorites = favorites.filter(story =>
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
-
-  if (error) {
-    return <div className="text-destructive">Error: {error.message}</div>;
-  }
+  );
 
   return (
     <div className="bg-background text-foreground">
       <div className="mb-4 flex">
         <Input
           type="text"
-          placeholder="Search stories..."
+          placeholder="Search favorites..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="mr-2 bg-secondary text-secondary-foreground"
@@ -67,18 +44,11 @@ const HackerNews = () => {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="space-y-4">
-          {[...Array(10)].map((_, index) => (
-            <div key={index} className="animate-pulse">
-              <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-muted rounded w-1/2"></div>
-            </div>
-          ))}
-        </div>
+      {filteredFavorites.length === 0 ? (
+        <p className="text-muted-foreground">No favorite stories yet.</p>
       ) : (
         <ul className="space-y-2">
-          {filteredStories.map((story) => (
+          {filteredFavorites.map((story) => (
             <li key={story.objectID} className="border-b border-border py-2 flex justify-between items-start">
               <div>
                 <h2 className="text-lg font-semibold mb-1">
@@ -98,8 +68,8 @@ const HackerNews = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => toggleFavorite(story)}
-                className={favorites.some(fav => fav.objectID === story.objectID) ? "text-yellow-500" : "text-muted-foreground"}
+                onClick={() => removeFavorite(story)}
+                className="text-yellow-500"
               >
                 <Star className="h-4 w-4" />
               </Button>
@@ -111,4 +81,4 @@ const HackerNews = () => {
   );
 };
 
-export default HackerNews;
+export default FavoriteStories;
