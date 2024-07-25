@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -16,9 +16,12 @@ const fetchHackerNewsStories = async () => {
 
 const HackerNews = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const { data, isLoading, error } = useQuery(['hackerNewsStories'], fetchHackerNewsStories);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['hackerNewsStories'],
+    queryFn: fetchHackerNewsStories,
+  });
 
-  const filteredStories = data?.hits.filter(story =>
+  const filteredStories = data?.hits?.filter(story =>
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
