@@ -26,20 +26,20 @@ const HackerNews = () => {
   ) || [];
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return <div className="text-destructive">Error: {error.message}</div>;
   }
 
   return (
-    <div>
+    <div className="bg-background text-foreground">
       <div className="mb-4 flex">
         <Input
           type="text"
           placeholder="Search stories..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="mr-2"
+          className="mr-2 bg-secondary text-secondary-foreground"
         />
-        <Button variant="outline">
+        <Button variant="outline" className="bg-accent text-accent-foreground hover:bg-accent/90">
           <Search className="h-4 w-4 mr-2" />
           Search
         </Button>
@@ -49,25 +49,28 @@ const HackerNews = () => {
         <div className="space-y-4">
           {[...Array(10)].map((_, index) => (
             <div key={index} className="animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
             </div>
           ))}
         </div>
       ) : (
-        <ul className="space-y-4">
+        <ul className="space-y-2">
           {filteredStories.map((story) => (
-            <li key={story.objectID} className="border p-4 rounded-lg">
-              <h2 className="text-xl font-semibold mb-2">{story.title}</h2>
-              <p className="text-sm text-gray-600 mb-2">Upvotes: {story.points}</p>
-              <a
-                href={story.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                Read more
-              </a>
+            <li key={story.objectID} className="border-b border-border py-2">
+              <h2 className="text-lg font-semibold mb-1">
+                <a
+                  href={story.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  {story.title}
+                </a>
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {story.points} points | by {story.author} | {story.num_comments} comments
+              </p>
             </li>
           ))}
         </ul>
